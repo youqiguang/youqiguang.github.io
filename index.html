@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>女巫的毒药 ✨ 震动加强版</title>
+    <style>
+        /* --- 基础设置 (保持原味，不做改动) --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: 'Nunito', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(180deg, #FF9A9E 0%, #FECFEF 99%, #FECFEF 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            color: #555;
+            overflow-x: hidden;
+            user-select: none; /* 防止长按选中文字 */
+        }
+        .bg-decor { position: fixed; font-size: 2rem; opacity: 0.3; animation: floatBackground 6s infinite ease-in-out; z-index: 0; pointer-events: none; }
+        @keyframes floatBackground { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        
+        /* --- 容器 --- */
+        .game-container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 35px;
+            padding: 30px 20px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 15px 35px rgba(255, 105, 135, 0.3);
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        /* --- 按钮 --- */
+        button { border: none; outline: none; cursor: pointer; font-family: inherit; }
+        .main-btn {
+            background: linear-gradient(45deg, #FF9A9E 0%, #FECFEF 100%);
+            color: #fff;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            border-radius: 50px;
+            box-shadow: 0 8px 20px rgba(255, 154, 158, 0.5);
+            transition: all 0.2s;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            width: 80%;
+            margin-top: 20px;
+        }
+        .main-btn:active { transform: scale(0.95); box-shadow: 0 4px 10px rgba(255, 154, 158, 0.4); }
+        
+        /* 次要按钮（用于回首页） */
+        .secondary-btn {
+            background: transparent;
+            color: #888;
+            border: 2px solid #eee;
+            margin-top: 10px;
+            padding: 10px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+        }
+
+        /* --- 屏幕 --- */
+        .screen { display: none; animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        /* --- 首页元素 --- */
+        .title-emoji { font-size: 4rem; margin-bottom: 10px; display: inline-block; animation: wiggly 2s infinite; }
+        @keyframes wiggly { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+        h1 { color: #FF6B6B; font-size: 2rem; margin-bottom: 10px; }
+        .desc { color: #888; margin-bottom: 20px; line-height: 1.6; }
+
+        /* --- 游戏区 --- */
+        .progress-bar-bg { background: #eee; height: 12px; border-radius: 10px; overflow: hidden; margin: 0 auto 20px; width: 80%; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #a18cd1 0%, #fbc2eb 100%); width: 0%; transition: width 0.5s ease; }
+        .round-info h2 { color: #a18cd1; font-size: 1.8rem; }
+        .hint { color: #FF8E53; font-weight: bold; margin-bottom: 20px; font-size: 1rem; min-height: 1.5em;}
+
+        .mushroom-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
+        .mushroom-card {
+            background: white; border-radius: 20px; padding: 15px 5px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05); cursor: pointer;
+            transition: all 0.2s ease; position: relative; border: 3px solid #f0f0f0;
+        }
+        .mushroom-card:active { transform: scale(0.9); }
+        .m-emoji { font-size: 3rem; display: block; line-height: 1.2; transition: all 0.3s; }
+        .m-num { font-size: 0.9rem; color: #aaa; font-weight: bold; }
+
+        /* 动画类 */
+        .shaking { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both infinite; border-color: #FF9A9E; background: #FFF0F5; }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0) rotate(-2deg); }
+            20%, 80% { transform: translate3d(2px, 0, 0) rotate(2deg); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0) rotate(-4deg); }
+            40%, 60% { transform: translate3d(4px, 0, 0) rotate(4deg); }
+        }
+
+        /* 揭秘毒药样式 */
+        .reveal-poison { opacity: 0.5; background: #ddd !important; filter: grayscale(100%); }
+        .reveal-poison .m-emoji { transform: scale(0.8); }
+
+        /* --- 结果 --- */
+        .result-icon { font-size: 5rem; margin: 10px 0; }
+        .correct-text { color: #4FACFE; }
+        .wrong-text { color: #FF6B6B; }
+
+        /* 撒花 */
+        .confetti { position: absolute; width: 10px; height: 10px; background-color: #f00; animation: fall 3s linear forwards; z-index: 5; pointer-events: none; }
+        @keyframes fall { to { transform: translateY(500px) rotate(720deg); opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <div class="bg-decor" style="top: 10%; left: 5%;">✨</div>
+    <div class="bg-decor" style="top: 20%; right: 10%;">🍄</div>
+    <div class="bg-decor" style="bottom: 15%; left: 10%;">🌟</div>
+    <div class="bg-decor" style="bottom: 5%; right: 5%;">🌸</div>
+
+    <div class="game-container">
+        
+        <div id="homeScreen" class="screen" style="display: block;">
+            <div class="title-emoji">🧙‍♀️🍬</div>
+            <h1>女巫的盲盒</h1>
+            <p class="desc">
+                森林里有一锅蘑菇汤...<br>
+                只有 <b>1个</b> 是剧毒的！<br>
+                凭直觉选出能吃的蘑菇！
+            </p>
+            <button class="main-btn" onclick="startGame()">开始作死 (ง •_•)ง</button>
+        </div>
+
+        <div id="gameScreen" class="screen">
+            <div class="progress-bar-bg">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <div class="round-info">
+                <h2 id="roundTitle">第 1 关</h2>
+                <p class="hint" id="hintText">...</p>
+            </div>
+
+            <div class="mushroom-grid" id="mushroomGrid"></div>
+        </div>
+
+        <div id="resultScreen" class="screen">
+            <div class="result-icon" id="resultEmoji">😳</div>
+            <h2 id="resultTitle">结果是...</h2>
+            <p id="resultMessage" class="desc" style="margin-top:10px;">...</p>
+            
+            <button id="actionBtn" class="main-btn" onclick="">下一关</button>
+            <br>
+            <button class="secondary-btn" onclick="goHome()">回首页 🏠</button>
+        </div>
+
+        <div id="finalScreen" class="screen">
+            <div class="title-emoji">🏆🎉</div>
+            <h2 style="color:#4facfe">欧皇降临！</h2>
+            <p class="desc">
+                不可思议！<br>
+                你完美避开了所有毒药！<br>
+                今晚的蘑菇汤归你了！
+            </p>
+            <button class="main-btn" onclick="startGame()">再来一局 🔄</button>
+            <br>
+            <button class="secondary-btn" onclick="goHome()">回首页 🏠</button>
+        </div>
+
+    </div>
+
+    <script>
+        // 游戏配置
+        const gameConfig = [
+            { count: 6, hint: '6选1，这局很简单的~' },
+            { count: 5, hint: '难度升级！手别抖哦~' },
+            { count: 4, hint: '空气突然安静了...' },
+            { count: 3, hint: '33%的死亡率，你敢点吗？' }
+        ];
+
+        let currentRound = 0;
+        let poisonIndex = -1;
+        let isProcessing = false;
+
+        // --- 核心工具函数 ---
+
+        // 震动反馈 (核心升级点)
+        function vibrate(pattern) {
+            if (navigator.vibrate) {
+                navigator.vibrate(pattern);
+            }
+        }
+
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(el => el.style.display = 'none');
+            document.getElementById(screenId).style.display = 'block';
+        }
+
+        // --- 游戏流程 ---
+
+        // 回首页 (修复点：重置数据并切屏)
+        function goHome() {
+            currentRound = 0;
+            document.getElementById('progressFill').style.width = '0%';
+            switchScreen('homeScreen');
+        }
+
+        function startGame() {
+            currentRound = 0;
+            loadRound();
+            switchScreen('gameScreen');
+        }
+
+        function loadRound() {
+            const config = gameConfig[currentRound];
+            
+            // 更新UI
+            document.getElementById('roundTitle').innerText = `第 ${currentRound + 1} 关`;
+            document.getElementById('hintText').innerText = config.hint;
+            
+            // 进度条
+            const percent = ((currentRound) / gameConfig.length) * 100;
+            document.getElementById('progressFill').style.width = `${percent}%`;
+
+            // 生成毒药
+            poisonIndex = Math.floor(Math.random() * config.count);
+            
+            // 渲染蘑菇
+            const grid = document.getElementById('mushroomGrid');
+            grid.innerHTML = '';
+
+            for (let i = 0; i < config.count; i++) {
+                const btn = document.createElement('div');
+                btn.className = 'mushroom-card';
+                btn.id = `mushroom-${i}`; // 标记ID方便查找
+                btn.innerHTML = `
+                    <span class="m-emoji">🍄</span>
+                    <span class="m-num">${i + 1}</span>
+                `;
+                btn.onclick = () => handlePick(i, btn);
+                grid.appendChild(btn);
+            }
+            isProcessing = false;
+        }
+
+        function handlePick(index, element) {
+            if (isProcessing) return;
+            isProcessing = true;
+
+            // 1. 紧张阶段：震动 + 动画
+            element.classList.add('shaking');
+            element.querySelector('.m-emoji').innerText = '😖';
+            vibrate(50); // 短震一下
+
+            // 2. 揭晓结果 (0.8秒后)
+            setTimeout(() => {
+                element.classList.remove('shaking');
+                
+                if (index === poisonIndex) {
+                    // --- 踩雷了 (大震动) ---
+                    vibrate([100, 50, 100, 50, 200]); 
+                    element.style.background = '#ffe0e0';
+                    element.querySelector('.m-emoji').innerText = '☠️';
+                    showResult(false, index);
+                } else {
+                    // --- 选对了 (轻微反馈) ---
+                    vibrate(50);
+                    element.style.background = '#e0fff0';
+                    element.querySelector('.m-emoji').innerText = '🍲';
+                    
+                    // 趣味功能：短暂显示毒药在哪里 (死里逃生感)
+                    revealPoisonTemp();
+
+                    setTimeout(() => {
+                         showResult(true, index);
+                    }, 1200); // 稍微多留点时间让用户看清毒药在哪
+                }
+            }, 800);
+        }
+
+        // 趣味功能：把毒药那个格子短暂显示出来
+        function revealPoisonTemp() {
+            const poisonEl = document.getElementById(`mushroom-${poisonIndex}`);
+            if(poisonEl) {
+                poisonEl.classList.add('reveal-poison');
+                poisonEl.querySelector('.m-emoji').innerText = '☠️';
+            }
+        }
+
+        function showResult(isSuccess, pickIndex) {
+            switchScreen('resultScreen');
+            const emoji = document.getElementById('resultEmoji');
+            const title = document.getElementById('resultTitle');
+            const msg = document.getElementById('resultMessage');
+            const btn = document.getElementById('actionBtn');
+
+            // 随机趣味文案库
+            const winQuotes = ["运气真好！", "这也行？", "天选之子！", "刚才好险..."];
+            const loseQuotes = ["今晚没饭吃了...", "女巫把你炖了！", "就差一点点！", "这也是一种运气..."];
+
+            if (isSuccess) {
+                emoji.innerText = ['😋', '✨', '🎉'][Math.floor(Math.random()*3)];
+                title.innerText = '安全通过！';
+                title.className = 'correct-text';
+                
+                const randomQuote = winQuotes[Math.floor(Math.random() * winQuotes.length)];
+                msg.innerHTML = `<b>${pickIndex + 1}号</b> 是无毒的！<br><span style="color:#aaa;font-size:0.9em">${randomQuote}</span>`;
+                
+                if (currentRound >= gameConfig.length - 1) {
+                    btn.innerText = '领取大奖 🎁';
+                    btn.onclick = () => {
+                        createConfetti();
+                        switchScreen('finalScreen');
+                    };
+                } else {
+                    btn.innerText = '下一关 ➜';
+                    btn.onclick = () => {
+                        currentRound++;
+                        loadRound();
+                        switchScreen('gameScreen');
+                    };
+                }
+
+            } else {
+                emoji.innerText = '👻';
+                title.innerText = '游戏结束';
+                title.className = 'wrong-text';
+                
+                const randomQuote = loseQuotes[Math.floor(Math.random() * loseQuotes.length)];
+                msg.innerHTML = `哎呀！<b>${pickIndex + 1}号</b> 正是毒药！<br><span style="color:#aaa;font-size:0.9em">${randomQuote}</span>`;
+                
+                btn.innerText = '不服，重来 😤';
+                btn.onclick = () => startGame();
+            }
+        }
+
+        function createConfetti() {
+            vibrate([50, 50, 50]); // 庆祝震动
+            for(let i=0; i<40; i++) {
+                const div = document.createElement('div');
+                div.className = 'confetti';
+                div.style.left = Math.random() * 100 + '%';
+                div.style.backgroundColor = ['#ff0', '#f00', '#0f0', '#00f', '#f0f'][Math.floor(Math.random()*5)];
+                div.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                document.body.appendChild(div);
+                setTimeout(() => div.remove(), 3000);
+            }
+        }
+    </script>
+</body>
+</html>
